@@ -1,0 +1,120 @@
+<svg width="600" height="460" viewBox="0 0 600 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with soft gradient -->
+  <rect width="600" height="460" rx="16" fill="url(#paint0_linear)" />
+  
+  <!-- Grid Lines -->
+  <g opacity="0.2" stroke="#94A3B8" stroke-dasharray="4 4">
+    <line x1="50" y1="50" x2="550" y2="50" />
+    <line x1="50" y1="100" x2="550" y2="100" />
+    <line x1="50" y1="150" x2="550" y2="150" />
+    <line x1="50" y1="200" x2="550" y2="200" />
+    <line x1="50" y1="250" x2="550" y2="250" />
+    <line x1="50" y1="300" x2="550" y2="300" />
+    <line x1="50" y1="350" x2="550" y2="350" />
+    <line x1="50" y1="400" x2="550" y2="400" />
+    
+    <line x1="100" y1="50" x2="100" y2="400" />
+    <line x1="150" y1="50" x2="150" y2="400" />
+    <line x1="200" y1="50" x2="200" y2="400" />
+    <line x1="250" y1="50" x2="250" y2="400" />
+    <line x1="300" y1="50" x2="300" y2="400" />
+    <line x1="350" y1="50" x2="350" y2="400" />
+    <line x1="400" y1="50" x2="400" y2="400" />
+    <line x1="450" y1="50" x2="450" y2="400" />
+    <line x1="500" y1="50" x2="500" y2="400" />
+  </g>
+  
+  <!-- Axis -->
+  <line x1="50" y1="400" x2="550" y2="400" stroke="#64748B" stroke-width="2" />
+  <line x1="50" y1="50" x2="50" y2="400" stroke="#64748B" stroke-width="2" />
+  
+  <!-- Expense Bar Chart (First Series - Primary) -->
+  <rect x="80" y="250" width="40" height="150" rx="4" fill="url(#paint1_linear)" />
+  <rect x="130" y="200" width="40" height="200" rx="4" fill="url(#paint1_linear)" />
+  <rect x="180" y="280" width="40" height="120" rx="4" fill="url(#paint1_linear)" />
+  <rect x="230" y="150" width="40" height="250" rx="4" fill="url(#paint1_linear)" />
+  <rect x="280" y="220" width="40" height="180" rx="4" fill="url(#paint1_linear)" />
+  <rect x="330" y="170" width="40" height="230" rx="4" fill="url(#paint1_linear)" />
+  <rect x="380" y="100" width="40" height="300" rx="4" fill="url(#paint1_linear)" />
+  <rect x="430" y="180" width="40" height="220" rx="4" fill="url(#paint1_linear)" />
+  <rect x="480" y="240" width="40" height="160" rx="4" fill="url(#paint1_linear)" />
+  
+  <!-- Line Chart (Secondary - Trend) -->
+  <path d="M100 270 L150 220 L200 280 L250 170 L300 230 L350 190 L400 120 L450 200 L500 250" stroke="url(#paint2_linear)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  
+  <!-- Data points -->
+  <circle cx="100" cy="270" r="6" fill="url(#paint3_radial)" />
+  <circle cx="150" cy="220" r="6" fill="url(#paint3_radial)" />
+  <circle cx="200" cy="280" r="6" fill="url(#paint3_radial)" />
+  <circle cx="250" cy="170" r="6" fill="url(#paint3_radial)" />
+  <circle cx="300" cy="230" r="6" fill="url(#paint3_radial)" />
+  <circle cx="350" cy="190" r="6" fill="url(#paint3_radial)" />
+  <circle cx="400" cy="120" r="6" fill="url(#paint3_radial)" />
+  <circle cx="450" cy="200" r="6" fill="url(#paint3_radial)" />
+  <circle cx="500" cy="250" r="6" fill="url(#paint3_radial)" />
+  
+  <!-- Month Labels -->
+  <text x="100" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Jan</text>
+  <text x="150" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Feb</text>
+  <text x="200" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Mar</text>
+  <text x="250" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Apr</text>
+  <text x="300" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">May</text>
+  <text x="350" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Jun</text>
+  <text x="400" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Jul</text>
+  <text x="450" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Aug</text>
+  <text x="500" y="425" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">Sep</text>
+  
+  <!-- Amount Labels -->
+  <text x="40" y="400" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$0</text>
+  <text x="40" y="350" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$500</text>
+  <text x="40" y="300" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$1000</text>
+  <text x="40" y="250" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$1500</text>
+  <text x="40" y="200" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$2000</text>
+  <text x="40" y="150" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$2500</text>
+  <text x="40" y="100" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$3000</text>
+  <text x="40" y="50" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748B">$3500</text>
+  
+  <!-- Legend -->
+  <rect x="420" y="30" width="16" height="16" rx="2" fill="url(#paint1_linear)" />
+  <text x="446" y="42" font-family="Inter, Arial, sans-serif" font-size="14" fill="#64748B">Expenses</text>
+  
+  <circle cx="428" cy="60" r="6" fill="url(#paint3_radial)" />
+  <text x="446" y="64" font-family="Inter, Arial, sans-serif" font-size="14" fill="#64748B">Savings</text>
+  
+  <!-- Defs for gradients -->
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="paint0_linear" x1="300" y1="0" x2="300" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC" />
+      <stop offset="1" stop-color="#F1F5F9" />
+    </linearGradient>
+    
+    <!-- Bar chart gradient -->
+    <linearGradient id="paint1_linear" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#3B82F6" />
+      <stop offset="1" stop-color="#2563EB" />
+    </linearGradient>
+    
+    <!-- Line chart gradient -->
+    <linearGradient id="paint2_linear" x1="100" y1="200" x2="500" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10B981" />
+      <stop offset="1" stop-color="#059669" />
+    </linearGradient>
+    
+    <!-- Data point radial gradient -->
+    <radialGradient id="paint3_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(3 3) rotate(90) scale(6)">
+      <stop stop-color="#10B981" />
+      <stop offset="1" stop-color="#059669" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Dark mode styles -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      #background { fill: #1E293B; }
+      .grid { stroke: #475569; }
+      .axis { stroke: #94A3B8; }
+      .label { fill: #CBD5E1; }
+    }
+  </style>
+</svg>

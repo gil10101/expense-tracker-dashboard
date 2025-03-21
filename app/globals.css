@@ -1,0 +1,270 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 221.2 83.2% 53.3%; /* Vibrant blue */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 262.1 83.3% 57.8%; /* Vibrant purple */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* Custom theme colors */
+    --expense: 0 84.2% 60.2%; /* Red */
+    --expense-foreground: 0 0% 98%;
+    --income: 142.1 76.2% 36.3%; /* Green */
+    --income-foreground: 0 0% 98%;
+    --budget: 262.1 83.3% 57.8%; /* Purple */
+    --budget-foreground: 0 0% 98%;
+    --warning: 47.9 95.8% 53.1%; /* Yellow */
+    --warning-foreground: 240 5.9% 10%;
+    --success: 142.1 76.2% 36.3%; /* Green */
+    --success-foreground: 0 0% 98%;
+
+    /* Chart colors */
+    --chart-1: 221.2 83.2% 53.3%; /* Blue */
+    --chart-2: 142.1 76.2% 36.3%; /* Green */
+    --chart-3: 355.7 100% 54.7%; /* Red */
+    --chart-4: 47.9 95.8% 53.1%; /* Yellow */
+    --chart-5: 262.1 83.3% 57.8%; /* Purple */
+    --chart-6: 20.5 90.2% 48.2%; /* Orange */
+    --chart-7: 199.4 89.5% 48.2%; /* Cyan */
+    --chart-8: 291.1 64.3% 42.2%; /* Pink */
+
+    /* Budget status colors */
+    --budget-under: 142.1 76.2% 36.3%;
+    --budget-warning: 47.9 95.8% 53.1%;
+    --budget-over: 355.7 100% 54.7%;
+
+    /* Sidebar variables */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 262.1 83.3% 57.8%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217.2 91.2% 59.8%; /* Brighter blue for dark mode */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 258.3 89.5% 66.3%; /* Brighter purple for dark mode */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 217.2 91.2% 59.8%;
+
+    /* Custom theme colors for dark mode */
+    --expense: 0 72.2% 50.6%; /* Darker red for dark mode */
+    --expense-foreground: 0 0% 98%;
+    --income: 142.1 70.6% 45.3%; /* Darker green for dark mode */
+    --income-foreground: 0 0% 98%;
+    --budget: 258.3 89.5% 66.3%; /* Darker purple for dark mode */
+    --budget-foreground: 0 0% 98%;
+    --warning: 47.9 95.8% 53.1%; /* Same yellow */
+    --warning-foreground: 240 5.9% 10%;
+    --success: 142.1 70.6% 45.3%; /* Darker green for dark mode */
+    --success-foreground: 0 0% 98%;
+
+    /* Chart colors for dark mode - brighter for better visibility */
+    --chart-1: 217.2 91.2% 59.8%; /* Brighter blue */
+    --chart-2: 142.1 70.6% 45.3%; /* Brighter green */
+    --chart-3: 0 84.2% 60.2%; /* Brighter red */
+    --chart-4: 47.9 95.8% 53.1%; /* Brighter yellow */
+    --chart-5: 258.3 89.5% 66.3%; /* Brighter purple */
+    --chart-6: 20.5 90.2% 48.2%; /* Brighter orange */
+    --chart-7: 199.4 89.5% 48.2%; /* Brighter cyan */
+    --chart-8: 291.1 64.3% 42.2%; /* Brighter pink */
+
+    /* Sidebar variables for dark mode */
+    --sidebar: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 258.3 89.5% 66.3%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Dashboard specific styles */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  @apply transition-all duration-200 hover:shadow-md;
+}
+
+.budget-progress-bar {
+  @apply h-2 rounded-full overflow-hidden bg-secondary relative;
+}
+
+.budget-progress-bar-fill {
+  @apply h-full transition-all duration-300 ease-out;
+}
+
+.budget-under {
+  @apply bg-success;
+}
+
+.budget-warning {
+  @apply bg-warning;
+}
+
+.budget-over {
+  @apply bg-expense;
+}
+
+.stat-card {
+  @apply relative overflow-hidden transition-all duration-200 hover:shadow-md;
+}
+
+.stat-card-icon {
+  @apply absolute right-4 bottom-4 opacity-10 text-primary;
+  font-size: 4rem;
+}
+
+.chart-container {
+  @apply rounded-lg p-4;
+  height: 350px;
+  position: relative;
+}
+
+.expense-table {
+  @apply w-full text-sm;
+}
+
+.expense-table th {
+  @apply font-medium text-muted-foreground;
+}
+
+.expense-table td {
+  @apply py-3;
+}
+
+/* 3D Canvas Styles */
+.canvas-container {
+  @apply w-full h-full absolute top-0 left-0 z-0 overflow-hidden;
+}
+
+.canvas-container canvas {
+  @apply w-full h-full;
+}
+
+.content-overlay {
+  @apply relative z-10;
+  pointer-events: none;
+}
+
+.content-overlay > * {
+  pointer-events: auto;
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Accessibility improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus styles for better accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+

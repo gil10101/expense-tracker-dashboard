@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0060df;
+        }
+        h1 {
+            color: #333;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #e6f7e6;
+            border: 1px solid #52c41a;
+            color: #52c41a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ExpenseTracker3D Model Generator</h1>
+        <p>Click the buttons below to generate 3D models for the application:</p>
+        
+        <div>
+            <button onclick="createBarChart()">Generate Bar Chart</button>
+            <button onclick="createCoinStack()">Generate Coin Stack</button>
+            <button onclick="createCreditCard()">Generate Credit Card</button>
+            <button onclick="createPieChart()">Generate Pie Chart</button>
+            <button onclick="createWallet()">Generate Wallet</button>
+            <button onclick="createLock()">Generate Lock</button>
+            <button onclick="generateAll()">Generate All Models</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.156.1/build/three.module.js",
+            "three/examples/jsm/exporters/GLTFExporter.js": "https://unpkg.com/three@0.156.1/examples/jsm/exporters/GLTFExporter.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+
+        function updateStatus(message) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML += `<p>${message}</p>`;
+            statusEl.className = 'status success';
+        }
+
+        async function exportGLB(scene, filename) {
+            const exporter = new GLTFExporter();
+
+            try {
+                exporter.parse(
+                    scene, 
+                    function (gltfBuffer) {
+                        // Create a blob from the buffer
+                        const blob = new Blob([gltfBuffer], { type: 'application/octet-stream' });
+                        
+                        // Download the file
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = filename;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        updateStatus(`Downloaded: ${filename}`);
+                        updateStatus(`
+                            <strong>IMPORTANT:</strong> Please move this file to: 
+                            <code>public/models/${filename}</code> in your project
+                        `);
+                    },
+                    function (error) {
+                        console.error('Error exporting GLB:', error);
+                        updateStatus(`Error: ${error.message}`);
+                    },
+                    { binary: true }
+                );
+            } catch (error) {
+                console.error('Exception during GLB export:', error);
+                updateStatus(`Export error: ${error.message}`);
+            }
+        }
+
+        function createMaterial(color = 0xdddddd) {
+            return new THREE.MeshStandardMaterial({ 
+                color: color, 
+                roughness: 0.3, 
+                metalness: 0.5 
+            });
+        }
+
+        function addLightsToScene(scene) {
+            // Remove ambient light and use only lights supported by GLTFExporter
+            
+            // Create a directional light with proper target setup per GLTF spec
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 2, 3);
+            scene.add(directionalLight);
+            
+            // Position the target at (0,0,-1) relative to the light as recommended
+            const targetObject = new THREE.Object3D();
+            // First add the target as a child of the light
+            directionalLight.add(targetObject);
+            // Then position it in front of the light (local coordinates)
+            targetObject.position.set(0, 0, -1);
+            // Set as the light's target
+            directionalLight.target = targetObject;
+            
+            // Add point lights for better illumination
+            const pointLight1 = new THREE.PointLight(0xffffff, 0.5);
+            pointLight1.position.set(-5, 5, 5);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0xffffff, 0.3);
+            pointLight2.position.set(5, -5, 5);
+            scene.add(pointLight2);
+        }
+
+        // Bar Chart
+        window.createBarChart = function() {
+            const scene = new THREE.Scene();
+            addLightsToScene(scene);
+            const material = createMaterial(0x10b981); // Green
+            
+            const bars = [1, 2, 1.5, 2.5, 1.2];
+            bars.forEach((height, i) => {
+                const geometry = new THREE.BoxGeometry(0.5, height, 0.5);
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(i - bars.length / 2, height / 2, 0);
+                scene.add(mesh);
+            });
+
+            // Add base plate
+            const baseGeometry = new THREE.BoxGeometry(5, 0.1, 1);
+            const baseMaterial = createMaterial(0x999999);
+            const baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+            baseMesh.position.set(0, -0.05, 0);
+            scene.add(baseMesh);
+
+            exportGLB(scene, 'bar_chart.glb');
+        };
+
+        // Coin Stack
+        window.createCoinStack = function() {
+            const scene = new THREE.Scene();
+            addLightsToScene(scene);
+            const material = createMaterial(0xFFD700); // Gold
+            
+            for (let i = 0; i < 10; i++) {
+                const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 32);
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(0, i * 0.11, 0);
+                scene.add(mesh);
+            }
+            
+            exportGLB(scene, 'coin_stack.glb');
+        };
+
+        // Credit Card
+        window.createCreditCard = function() {
+            const scene = new THREE.Scene();
+            addLightsToScene(scene);
+            const material = createMaterial(0x2563eb); // Blue
+            
+            const geometry = new THREE.BoxGeometry(3.5, 2, 0.1);
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+            
+            // Add chip
+            const chipGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.12);
+            const chipMaterial = createMaterial(0xD4AF37);
+            const chipMesh = new THREE.Mesh(chipGeometry, chipMaterial);
+            chipMesh.position.set(-1, 0, 0.06);
+            scene.add(chipMesh);
+            
+            // Add magnetic strip
+            const stripGeometry = new THREE.BoxGeometry(0.8, 1.8, 0.05);
+            const stripMaterial = createMaterial(0x333333);
+            const stripMesh = new THREE.Mesh(stripGeometry, stripMaterial);
+            stripMesh.position.set(1.3, 0, 0.03);
+            scene.add(stripMesh);
+            
+            exportGLB(scene, 'credit_card.glb');
+        };
+
+        // Wallet
+        window.createWallet = function() {
+            const scene = new THREE.Scene();
+            addLightsToScene(scene);
+            
+            // Main wallet body - brown leather color
+            const walletMaterial = createMaterial(0x8B4513); // Brown
+            
+            // Closed wallet - slightly folded rectangular shape
+            const walletWidth = 3;
+            const walletHeight = 0.6;
+            const walletDepth = 2;
+            
+            // Create wallet base
+            const baseGeometry = new THREE.BoxGeometry(walletWidth, walletHeight, walletDepth);
+            const baseMesh = new THREE.Mesh(baseGeometry, walletMaterial);
+            scene.add(baseMesh);
+            
+            // Add a fold line down the middle
+            const foldLineGeometry = new THREE.BoxGeometry(0.05, walletHeight + 0.02, walletDepth);
+            const foldLineMaterial = createMaterial(0x5D4037); // Darker brown
+            const foldLineMesh = new THREE.Mesh(foldLineGeometry, foldLineMaterial);
+            foldLineMesh.position.set(0, 0, 0);
+            scene.add(foldLineMesh);
+            
+            // Add wallet details - card slots showing
+            const cardSlotMaterial = createMaterial(0x3E2723); // Very dark brown
+            
+            // Card slots
+            for (let i = 0; i < 3; i++) {
+                const slotGeometry = new THREE.BoxGeometry(walletWidth * 0.8, 0.02, walletDepth * 0.7);
+                const slotMesh = new THREE.Mesh(slotGeometry, cardSlotMaterial);
+                slotMesh.position.set(walletWidth * 0.05, walletHeight * 0.25, (i * 0.2) - walletDepth * 0.3);
+                scene.add(slotMesh);
+            }
+            
+            // Add a small bill section peeking out
+            const billGeometry = new THREE.BoxGeometry(walletWidth * 0.9, 0.05, walletDepth * 0.2);
+            const billMaterial = createMaterial(0x4CAF50); // Green for cash
+            const billMesh = new THREE.Mesh(billGeometry, billMaterial);
+            billMesh.position.set(0, -walletHeight * 0.2, 0);
+            scene.add(billMesh);
+            
+            // Add stitching detail around wallet edges
+            const stitchMaterial = createMaterial(0xE0E0E0); // Light gray
+            
+            // Top edge stitching
+            const topStitchGeometry = new THREE.BoxGeometry(walletWidth, 0.04, 0.04);
+            const topStitchMesh = new THREE.Mesh(topStitchGeometry, stitchMaterial);
+            topStitchMesh.position.set(0, walletHeight * 0.52, walletDepth * 0.5);
+            scene.add(topStitchMesh);
+            
+            // Bottom edge stitching
+            const bottomStitchGeometry = new THREE.BoxGeometry(walletWidth, 0.04, 0.04);
+            const bottomStitchMesh = new THREE.Mesh(bottomStitchGeometry, stitchMaterial);
+            bottomStitchMesh.position.set(0, walletHeight * 0.52, -walletDepth * 0.5);
+            scene.add(bottomStitchMesh);
+            
+            exportGLB(scene, 'wallet.glb');
+        };
+
+        // Lock
+        window.createLock = function() {
+            const scene = new THREE.Scene();
+            addLightsToScene(scene);
+            
+            // Lock body - metallic silver/gray
+            const lockMaterial = createMaterial(0x888888);
+            lockMaterial.metalness = 0.8;
+            lockMaterial.roughness = 0.2;
+            
+            // Main lock body - rectangular with rounded top
+            const lockWidth = 1.5;
+            const lockHeight = 2.5;
+            const lockDepth = 0.8;
+            
+            // Create lock base (main body)
+            const baseGeometry = new THREE.BoxGeometry(lockWidth, lockHeight * 0.7, lockDepth);
+            const baseMesh = new THREE.Mesh(baseGeometry, lockMaterial);
+            baseMesh.position.set(0, -0.3, 0);
+            scene.add(baseMesh);
+            
+            // Create rounded top
+            const topGeometry = new THREE.CylinderGeometry(lockWidth/2, lockWidth/2, lockDepth, 32, 1, false, 0, Math.PI);
+            const topMesh = new THREE.Mesh(topGeometry, lockMaterial);
+            topMesh.rotation.set(Math.PI/2, 0, Math.PI/2);
+            topMesh.position.set(0, lockHeight * 0.4, 0);
+            scene.add(topMesh);
+            
+            // Create keyhole
+            const keyholeTopGeometry = new THREE.CircleGeometry(0.25, 32);
+            const keyholeMaterial = createMaterial(0x111111);
+            const keyholeTopMesh = new THREE.Mesh(keyholeTopGeometry, keyholeMaterial);
+            keyholeTopMesh.position.set(0, 0, lockDepth/2 + 0.01);
+            scene.add(keyholeTopMesh);
+            
+            // Keyhole bottom part
+            const keyholeBottomGeometry = new THREE.BoxGeometry(0.12, 0.3, 0.02);
+            const keyholeBottomMesh = new THREE.Mesh(keyholeBottomGeometry, keyholeMaterial);
+            keyholeBottomMesh.position.set(0, -0.25, lockDepth/2 + 0.01);
+            scene.add(keyholeBottomMesh);
+            
+            // Create lock shackle (the U-shaped part)
+            const shackleMaterial = createMaterial(0x777777);
+            shackleMaterial.metalness = 0.9;
+            
+            // Create the U shape using a tube geometry
+            const shackleRadius = 0.15;
+            const shackleWidth = lockWidth * 0.6;
+            const shackleHeight = lockHeight * 0.4;
+            
+            // Create the curved part of the shackle
+            const curveGeometry = new THREE.TorusGeometry(shackleWidth/2, shackleRadius, 16, 32, Math.PI);
+            const curveMesh = new THREE.Mesh(curveGeometry, shackleMaterial);
+            curveMesh.position.set(0, lockHeight * 0.7, 0);
+            curveMesh.rotation.set(Math.PI/2, 0, 0);
+            scene.add(curveMesh);
+            
+            // Create the straight parts of the shackle
+            const leg1Geometry = new THREE.CylinderGeometry(shackleRadius, shackleRadius, shackleHeight, 16);
+            const leg1Mesh = new THREE.Mesh(leg1Geometry, shackleMaterial);
+            leg1Mesh.position.set(-shackleWidth/2, lockHeight * 0.5, 0);
+            scene.add(leg1Mesh);
+            
+            const leg2Geometry = new THREE.CylinderGeometry(shackleRadius, shackleRadius, shackleHeight * 0.7, 16);
+            const leg2Mesh = new THREE.Mesh(leg2Geometry, shackleMaterial);
+            leg2Mesh.position.set(shackleWidth/2, lockHeight * 0.35, 0);
+            scene.add(leg2Mesh);
+            
+            // Add subtle details/highlights
+            const highlightMaterial = createMaterial(0xcccccc);
+            highlightMaterial.metalness = 0.9;
+            
+            // Add a small rim around the main body
+            const rimGeometry = new THREE.BoxGeometry(lockWidth + 0.1, 0.1, lockDepth + 0.1);
+            const rimMesh = new THREE.Mesh(rimGeometry, highlightMaterial);
+            rimMesh.position.set(0, 0.2, 0);
+            scene.add(rimMesh);
+            
+            exportGLB(scene, 'lock.glb');
+        };
+
+        // Pie Chart
+        window.createPieChart = function() {
+            const scene = new THREE.Scene();
+            addLightsToScene(scene);
+            
+            const radius = 1;
+            const height = 0.2;
+            const segments = 32;
+            
+            const colors = [0x8b5cf6, 0xff5733, 0x33ff57]; // Purple, orange, green
+            const slices = [0.5, 0.3, 0.2]; // Slice proportions
+            
+            let startAngle = 0;
+            slices.forEach((slice, i) => {
+                const endAngle = startAngle + slice * Math.PI * 2;
+                
+                const geometry = new THREE.CylinderGeometry(
+                    radius, radius, height, segments,
+                    1, true, startAngle, slice * Math.PI * 2
+                );
+                
+                const material = createMaterial(colors[i]);
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+                
+                startAngle = endAngle;
+            });
+            
+            // Add base
+            const baseGeometry = new THREE.CylinderGeometry(radius, radius, height * 0.5, segments);
+            const baseMaterial = createMaterial(0x444444);
+            const baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+            baseMesh.position.set(0, -height * 0.75, 0);
+            scene.add(baseMesh);
+            
+            exportGLB(scene, 'pie_chart.glb');
+        };
+
+        // Generate all models
+        window.generateAll = async function() {
+            updateStatus("Starting to generate all models...");
+            
+            // Generate models with a small delay between each
+            updateStatus("Generating bar chart...");
+            createBarChart();
+            
+            // Wait before generating the next model
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            updateStatus("Generating coin stack...");
+            createCoinStack();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            updateStatus("Generating credit card...");
+            createCreditCard();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            updateStatus("Generating pie chart...");
+            createPieChart();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            updateStatus("Generating wallet...");
+            createWallet();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            updateStatus("Generating lock...");
+            createLock();
+            
+            updateStatus("All models generated! Please move them to your project's public/models directory.");
+        };
+    </script>
+</body>
+</html> 

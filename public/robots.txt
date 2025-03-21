@@ -1,0 +1,11 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow sensitive routes
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /expenses
+Disallow: /budgets
+Disallow: /dashboard/expenses
+
