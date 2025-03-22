@@ -49,6 +49,8 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { listExpenses } from "@/lib/expense-api"
+import { Notification } from "@/components/notifications-panel"
+import { NotificationsPanel } from "@/components/notifications-panel"
 
 export default function DashboardLayout({
   children,
@@ -61,30 +63,7 @@ export default function DashboardLayout({
   const { theme, setTheme } = useTheme()
   const [isMounted, setIsMounted] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [notifications, setNotifications] = useState([
-    {
-      id: "1",
-      title: "Budget Alert",
-      message: "You've reached 90% of your Food budget for this month.",
-      date: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      read: false,
-    },
-    {
-      id: "2",
-      title: "Expense Added",
-      message: "Your expense of $45.99 for Groceries has been added.",
-      date: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      read: false,
-    },
-    {
-      id: "3",
-      title: "System Update",
-      message: "The expense tracker has been updated with new features.",
-      date: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      read: true,
-    },
-  ])
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState([])
@@ -166,39 +145,7 @@ export default function DashboardLayout({
 
   // Toggle sidebar
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
-
-  // Mark a notification as read
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
-    )
-  }
-
-  // Mark all notifications as read
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })))
-  }
-
-  // Format relative time for notifications
-  const formatRelativeTime = (date: Date) => {
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffSec = Math.floor(diffMs / 1000)
-    const diffMin = Math.floor(diffSec / 60)
-    const diffHour = Math.floor(diffMin / 60)
-    const diffDay = Math.floor(diffHour / 24)
-
-    if (diffDay > 0) {
-      return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`
-    } else if (diffHour > 0) {
-      return `${diffHour} hour${diffHour > 1 ? "s" : ""} ago`
-    } else if (diffMin > 0) {
-      return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`
-    } else {
-      return "Just now"
-    }
+    setSidebarOpen(!sidebarOpen)
   }
 
   // Navigate to expense details from search
@@ -307,22 +254,19 @@ export default function DashboardLayout({
     },
   ]
 
-  // Count unread notifications
-  const unreadCount = notifications.filter((n) => !n.read).length
-
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <aside 
         className={`bg-card border-r transition-all duration-300 ${
-          isSidebarOpen ? 'w-64' : 'w-20'
+          sidebarOpen ? 'w-64' : 'w-20'
         } flex flex-col`}
       >
         {/* Sidebar Header */}
         <div className="h-16 border-b flex items-center px-4">
           <Link href="/dashboard" className="flex items-center gap-2">
             <DollarSign className="h-6 w-6 text-primary" />
-            {isSidebarOpen && <span className="text-lg font-bold">ExpenseTracker3D</span>}
+            {sidebarOpen && <span className="text-lg font-bold">ExpenseTracker3D</span>}
           </Link>
         </div>
 
@@ -334,10 +278,10 @@ export default function DashboardLayout({
                 <Link href={item.href}>
                   <Button
                     variant={pathname === item.href ? "default" : "ghost"}
-                    className={`w-full justify-start ${!isSidebarOpen ? 'px-2' : ''}`}
+                    className={`w-full justify-start ${!sidebarOpen ? 'px-2' : ''}`}
                   >
                     {item.icon}
-                    {isSidebarOpen && <span className="ml-2">{item.name}</span>}
+                    {sidebarOpen && <span className="ml-2">{item.name}</span>}
                   </Button>
                 </Link>
               </li>
@@ -350,23 +294,23 @@ export default function DashboardLayout({
           <Link href="/dashboard/settings">
             <Button
               variant="ghost"
-              className={`w-full justify-start ${!isSidebarOpen ? 'px-2' : ''}`}
+              className={`w-full justify-start ${!sidebarOpen ? 'px-2' : ''}`}
             >
               <Settings className="h-5 w-5" />
-              {isSidebarOpen && <span className="ml-2">Settings</span>}
+              {sidebarOpen && <span className="ml-2">Settings</span>}
             </Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className={`w-full justify-start mt-2 ${!isSidebarOpen ? 'px-2' : ''}`}
+                className={`w-full justify-start mt-2 ${!sidebarOpen ? 'px-2' : ''}`}
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user.photoURL || ""} alt={user.displayName || user.email || "User"} />
                   <AvatarFallback>{getInitials(user.displayName || user.email || "User")}</AvatarFallback>
                 </Avatar>
-                {isSidebarOpen && (
+                {sidebarOpen && (
                   <div className="ml-2 text-left">
                     <p className="text-sm font-medium truncate max-w-[120px]">
                       {user.displayName || user.email?.split("@")[0] || "User"}
@@ -441,75 +385,7 @@ export default function DashboardLayout({
             </Button>
 
             {/* Notifications */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center">
-                      <span className="bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {unreadCount}
-                      </span>
-                    </span>
-                  )}
-                  <span className="sr-only">Notifications</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0" align="end">
-                <div className="flex items-center justify-between p-4 border-b">
-                  <h3 className="font-medium">Notifications</h3>
-                  {unreadCount > 0 && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={markAllAsRead}
-                      className="text-xs h-8"
-                    >
-                      Mark all as read
-                    </Button>
-                  )}
-                </div>
-                <ScrollArea className="h-[300px]">
-                  {notifications.length > 0 ? (
-                    <div className="flex flex-col">
-                      {notifications.map((notification) => (
-                        <div 
-                          key={notification.id} 
-                          className={`flex items-start p-4 border-b hover:bg-muted/50 transition-colors ${!notification.read ? 'bg-muted/20' : ''}`}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-sm font-medium">{notification.title}</h4>
-                              <span className="text-xs text-muted-foreground">
-                                {formatRelativeTime(notification.date)}
-                              </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1 truncate">
-                              {notification.message}
-                            </p>
-                          </div>
-                          {!notification.read && (
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-6 w-6 ml-2" 
-                              onClick={() => markAsRead(notification.id)}
-                            >
-                              <span className="sr-only">Mark as read</span>
-                              <div className="h-2 w-2 rounded-full bg-primary"></div>
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full p-4">
-                      <p className="text-sm text-muted-foreground">No notifications</p>
-                    </div>
-                  )}
-                </ScrollArea>
-              </PopoverContent>
-            </Popover>
+            <NotificationsPanel />
 
             {/* Theme Toggle */}
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
