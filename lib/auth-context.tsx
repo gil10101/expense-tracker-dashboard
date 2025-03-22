@@ -93,17 +93,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       auth,
       async (user) => {
         if (user) {
-          console.log("Auth state changed: User authenticated")
+          console.log("Auth state changed: User authenticated", user.uid)
           setUser(user)
 
           // Fetch user profile from Firestore
           try {
+            console.log("Fetching user profile from Firestore for UID:", user.uid)
             const userDoc = await getDoc(doc(db, "users", user.uid))
+            
             if (userDoc.exists()) {
-              setUserProfile({ id: user.uid, ...userDoc.data() } as UserProfile)
+              console.log("User profile found in Firestore")
+              const userData = userDoc.data()
+              setUserProfile({
+                id: user.uid,
+                email: user.email || "",
+                displayName: userData.displayName || user.displayName || "",
+                photoURL: userData.photoURL || user.photoURL || "",
+                createdAt: userData.createdAt,
+                updatedAt: userData.updatedAt,
+                settings: userData.settings || {},
+              })
             } else {
+              console.log("No user profile found in Firestore, creating one")
               // Create user profile if it doesn't exist
-              const newProfile: UserProfile = {
+              const newUserProfile = {
                 id: user.uid,
                 email: user.email || "",
                 displayName: user.displayName || "",
@@ -121,14 +134,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 },
               }
 
-              await setDoc(doc(db, "users", user.uid), newProfile)
-              setUserProfile(newProfile)
+              // Add user to Firestore
+              try {
+                await setDoc(doc(db, "users", user.uid), newUserProfile)
+                console.log("New user profile created in Firestore")
+                setUserProfile(newUserProfile)
+              } catch (error) {
+                console.error("Error creating user profile:", error)
+                setError(error as Error)
+              }
             }
-          } catch (err) {
-            console.error("Error fetching user profile:", err)
+          } catch (error) {
+            console.error("Error fetching user profile:", error)
+            setError(error as Error)
           }
         } else {
-          console.log("Auth state changed: No user")
+          console.log("Auth state changed: User signed out")
           setUser(null)
           setUserProfile(null)
         }
@@ -136,14 +157,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
       (error) => {
         console.error("Auth state change error:", error)
-        setError(error)
+        setError(error as Error)
         setAuthError(error.message)
         setLoading(false)
-      },
+      }
     )
 
     return () => {
-      console.log("Cleaning up auth state change listener")
+      console.log("Cleaning up auth state listener")
       unsubscribe()
     }
   }, [isInitialized])

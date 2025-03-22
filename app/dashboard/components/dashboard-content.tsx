@@ -56,34 +56,41 @@ export default function DashboardContent() {
   // Function to fetch expenses and budgets
   const fetchData = useCallback(async () => {
     if (!user?.uid) {
-      setLoading(false)
-      return
+      console.log("No user ID available, skipping data fetch");
+      setLoading(false);
+      return;
     }
 
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       console.log("Fetching dashboard data...");
       console.log("Current user ID:", user.uid);
       
       // Date range for current period (current month)
-      const dateRange = {
-        from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        to: new Date(),
+      const currentDateRange = {
+        from: dateRange.from,
+        to: dateRange.to,
       };
+
+      console.log("Fetching expenses with date range:", currentDateRange);
 
       // Date range for previous period (previous month)
       const previousDateRange = {
-        from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
-        to: new Date(new Date().getFullYear(), new Date().getMonth(), 0),
+        from: new Date(dateRange.from.getFullYear(), dateRange.from.getMonth() - 1, 1),
+        to: new Date(dateRange.from.getFullYear(), dateRange.from.getMonth(), 0),
       };
+
+      console.log("Previous period date range:", previousDateRange);
 
       // Fetch current period expenses
       const expensesData = await listExpenses(user.uid, {
-        fromDate: dateRange.from,
-        toDate: dateRange.to,
+        fromDate: currentDateRange.from,
+        toDate: currentDateRange.to,
       });
+
+      console.log("Expenses data fetched:", expensesData);
 
       // Fetch previous period expenses for comparison
       const previousPeriodData = await listExpenses(user.uid, {
@@ -91,28 +98,35 @@ export default function DashboardContent() {
         toDate: previousDateRange.to,
       });
 
+      console.log("Previous period data fetched:", previousPeriodData);
+
       // Fetch budgets
       const budgetsData = await getCurrentMonthBudgets(user.uid);
+      console.log("Budgets data fetched:", budgetsData);
 
       // Get expenses by category for the chart
-      const categoryData = await getExpensesByCategory(user.uid, dateRange.from, dateRange.to);
+      const categoryData = await getExpensesByCategory(user.uid, currentDateRange.from, currentDateRange.to);
+      console.log("Category data fetched:", categoryData);
 
       // Get expenses by day for the chart
-      const dailyData = await getExpensesByDay(user.uid, dateRange.from, dateRange.to);
+      const dailyData = await getExpensesByDay(user.uid, currentDateRange.from, currentDateRange.to);
+      console.log("Daily data fetched:", dailyData);
 
       if (expensesData && Array.isArray(expensesData)) {
-        setExpenses(expensesData)
+        setExpenses(expensesData);
 
         // Calculate total expenses
         const total = expensesData.reduce((sum, expense) => {
-          const amount = typeof expense.amount === "number" ? expense.amount : 0
-          return sum + amount
-        }, 0)
+          const amount = typeof expense.amount === "number" ? expense.amount : 0;
+          return sum + amount;
+        }, 0);
 
-        setTotalExpense(total)
+        setTotalExpense(total);
+        console.log("Total expense calculated:", total);
       } else {
-        setExpenses([])
-        setTotalExpense(0)
+        console.log("No expenses data or not an array, setting empty values");
+        setExpenses([]);
+        setTotalExpense(0);
       }
 
       if (previousPeriodData && Array.isArray(previousPeriodData)) {
@@ -480,7 +494,7 @@ export default function DashboardContent() {
                       <CardTitle>Expense Trends</CardTitle>
                       <CardDescription>Track your spending patterns over time</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[350px]">
+                    <CardContent className="h-[450px] pb-8">
                       {lineChartData.length > 0 ? (
                         <ExpenseLineChart data={lineChartData} />
                       ) : (
@@ -497,7 +511,7 @@ export default function DashboardContent() {
                       <CardTitle>Expense Distribution</CardTitle>
                       <CardDescription>Breakdown of your expenses by category</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[350px]">
+                    <CardContent className="h-[450px] pb-8">
                       {topCategories.length > 0 ? (
                         <ExpensePieChart data={pieChartData} />
                       ) : (
@@ -514,7 +528,7 @@ export default function DashboardContent() {
                       <CardTitle>Expenses by Category</CardTitle>
                       <CardDescription>Comparison of spending across different categories</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[350px]">
+                    <CardContent className="h-[450px] pb-8">
                       {topCategories.length > 0 ? (
                         <ExpenseBarChart expenses={expenses} />
                       ) : (

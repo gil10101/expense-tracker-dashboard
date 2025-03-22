@@ -30,21 +30,33 @@ export interface Budget {
 
 // Get all budgets for a user
 export async function listBudgets(userId?: string) {
-  if (!userId) return []
+  if (!userId) {
+    console.log("No userId provided to listBudgets, returning empty array");
+    return []
+  }
 
   try {
+    console.log("Fetching budgets for user:", userId);
     const budgetsRef = collection(db, "budgets")
     const q = query(budgetsRef, where("userId", "==", userId), orderBy("startDate", "desc"))
 
     const querySnapshot = await getDocs(q)
     
-    console.log(`Fetched ${querySnapshot.docs.length} budgets for user ${userId}`)
+    console.log(`Fetched ${querySnapshot.docs.length} budgets for user ${userId}`);
 
     return querySnapshot.docs.map((doc) => {
       const data = doc.data()
       // Convert Firestore Timestamp to Date string
-      const startDate = data.startDate instanceof Timestamp ? data.startDate.toDate().toISOString() : data.startDate
-      const endDate = data.endDate instanceof Timestamp ? data.endDate.toDate().toISOString() : data.endDate
+      let startDate = data.startDate;
+      let endDate = data.endDate;
+      
+      if (startDate && typeof startDate.toDate === 'function') {
+        startDate = startDate.toDate().toISOString();
+      }
+      
+      if (endDate && typeof endDate.toDate === 'function') {
+        endDate = endDate.toDate().toISOString();
+      }
 
       return {
         id: doc.id,
@@ -55,7 +67,8 @@ export async function listBudgets(userId?: string) {
     })
   } catch (error) {
     console.error("Error fetching budgets:", error)
-    throw error
+    // Return empty array instead of throwing to prevent UI from breaking
+    return []
   }
 }
 
@@ -164,12 +177,21 @@ export async function deleteBudget(id: string) {
 
 // Get current month's budgets
 export async function getCurrentMonthBudgets(userId?: string) {
-  if (!userId) return []
+  if (!userId) {
+    console.log("No userId provided to getCurrentMonthBudgets, returning empty array");
+    return []
+  }
 
   try {
+    console.log("Fetching current month budgets for user:", userId);
     const now = new Date()
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    
+    console.log("Date range:", {
+      firstDayOfMonth: firstDayOfMonth.toISOString(),
+      lastDayOfMonth: lastDayOfMonth.toISOString()
+    });
 
     const budgetsRef = collection(db, "budgets")
     const q = query(
@@ -179,16 +201,31 @@ export async function getCurrentMonthBudgets(userId?: string) {
       where("startDate", "<=", Timestamp.fromDate(lastDayOfMonth)),
     )
 
+    console.log("Executing Firestore query for current month budgets");
     const querySnapshot = await getDocs(q)
+    console.log(`Got ${querySnapshot.docs.length} budget results from Firestore`);
 
     // Filter budgets that are applicable for the current month
     const budgets = querySnapshot.docs
       .map((doc) => {
         const data = doc.data()
         // Convert Firestore Timestamp to Date
-        const startDate = data.startDate instanceof Timestamp ? data.startDate.toDate() : new Date(data.startDate)
-        const endDate =
-          data.endDate instanceof Timestamp ? data.endDate.toDate() : data.endDate ? new Date(data.endDate) : null
+        let startDate = data.startDate;
+        let endDate = data.endDate;
+        
+        if (startDate && typeof startDate.toDate === 'function') {
+          startDate = startDate.toDate();
+        } else if (startDate) {
+          startDate = new Date(startDate);
+        }
+        
+        if (endDate && typeof endDate.toDate === 'function') {
+          endDate = endDate.toDate();
+        } else if (endDate) {
+          endDate = new Date(endDate);
+        } else {
+          endDate = null;
+        }
 
         return {
           id: doc.id,
@@ -205,10 +242,12 @@ export async function getCurrentMonthBudgets(userId?: string) {
         return budget.endDate >= firstDayOfMonth
       })
 
+    console.log(`Returning ${budgets.length} budgets for current month`);
     return budgets
   } catch (error) {
     console.error("Error fetching current month budgets:", error)
-    throw error
+    // Return empty array instead of throwing to prevent UI from breaking
+    return []
   }
 }
 

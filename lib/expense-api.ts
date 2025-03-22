@@ -52,39 +52,72 @@ export const listExpenses = async (userId: string, options: ListExpensesOptions 
     const { limit, sortBy = "date", sortDirection = "desc", category, fromDate, toDate, search } = options
 
     console.log("Creating Firestore query with userId:", userId);
+    console.log("Query options:", JSON.stringify({
+      limit,
+      sortBy,
+      sortDirection,
+      category,
+      fromDate: fromDate ? new Date(fromDate).toISOString() : null,
+      toDate: toDate ? new Date(toDate).toISOString() : null,
+      search
+    }));
+
     const expensesRef = collection(db, "expenses")
     let q = query(expensesRef, where("userId", "==", userId))
 
     // Apply category filter
     if (category) {
+      console.log("Applying category filter:", category);
       q = query(q, where("category", "==", category))
     }
 
     // Apply date range filter
     if (fromDate) {
-      q = query(q, where("date", ">=", fromDate))
+      console.log("Applying fromDate filter:", new Date(fromDate).toISOString());
+      const fromDateStr = fromDate instanceof Date ? fromDate.toISOString().split('T')[0] : new Date(fromDate).toISOString().split('T')[0];
+      console.log("From date as string:", fromDateStr);
+      q = query(q, where("date", ">=", fromDateStr));
     }
     if (toDate) {
-      q = query(q, where("date", "<=", toDate))
+      console.log("Applying toDate filter:", new Date(toDate).toISOString());
+      const toDateStr = toDate instanceof Date ? toDate.toISOString().split('T')[0] : new Date(toDate).toISOString().split('T')[0];
+      console.log("To date as string:", toDateStr);
+      q = query(q, where("date", "<=", toDateStr));
     }
 
     // Apply sorting
     const orderByDirection = sortDirection === "asc" ? "asc" : "desc"
+    console.log(`Applying sorting: ${sortBy} ${orderByDirection}`);
     q = query(q, orderBy(sortBy, orderByDirection))
 
     // Apply limit
     if (limit) {
+      console.log("Applying limit:", limit);
       q = query(q, firestoreLimit(limit))
     }
 
+    console.log("Executing Firestore query");
     const querySnapshot = await getDocs(q)
-    const expenses = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Expense[]
+    console.log(`Got ${querySnapshot.docs.length} results from Firestore`);
+
+    const expenses = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      // Convert Firestore Timestamp to Date string if needed
+      let date = data.date;
+      if (date && typeof date.toDate === 'function') {
+        date = date.toDate().toISOString();
+      }
+      
+      return {
+        id: doc.id,
+        ...data,
+        date,
+      };
+    }) as Expense[]
 
     // Apply search filter (client-side)
     if (search) {
+      console.log("Applying client-side search filter:", search);
       const searchLower = search.toLowerCase()
       return expenses.filter((expense) => {
         return (
@@ -95,10 +128,12 @@ export const listExpenses = async (userId: string, options: ListExpensesOptions 
       })
     }
 
+    console.log(`Returning ${expenses.length} expenses`);
     return expenses
   } catch (error) {
     console.error("Error getting expenses:", error)
-    throw error
+    // Return empty array instead of throwing to prevent UI from breaking
+    return []
   }
 }
 
